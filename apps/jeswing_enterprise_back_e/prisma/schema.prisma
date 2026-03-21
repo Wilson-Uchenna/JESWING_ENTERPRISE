@@ -21,6 +21,8 @@ model Product {
   stripePriceId String
   isFeatured    Boolean?    @default(false)
   orderItems    OrderItem[]
+  categoryId    String
+  category      Category    @relation(fields: [categoryId], references: [id])
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 }
@@ -48,20 +50,22 @@ model OrderItem {
 }
 
 model User {
-  id       String   @id @default(uuid())
-  name     String
-  email    String
-  password String
-  role     UserRole @default(CUSTOMER)
+  id        String   @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String   @unique()
+  password  String
+  role      UserRole @default(CUSTOMER)
 
   orders Order[]
 }
 
 model Category {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   name      String
   slug      String
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  products  Product[]
 }
 
 enum OrderStatus {

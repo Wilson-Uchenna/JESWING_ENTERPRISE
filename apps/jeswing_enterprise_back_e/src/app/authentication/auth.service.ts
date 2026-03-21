@@ -1,0 +1,140 @@
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { CreateAuthInput, LoginInput } from './dto/create-auth.input';
+import { UpdateAuthInput } from './dto/update-auth.input';
+import { PrismaService } from '../prisma/prisma.service';
+import * as bcrypt from 'bcrypt';
+import { UserRole } from '../../generated/prisma/enums';
+import { JwtService } from '@nestjs/jwt';
+import { LoginResponse } from './dto/auth-response';
+
+@Injectable()
+export class AuthService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  private generateTokens(user: { id: string; email: string; role: UserRole }) {
+    const payload = { sub: user.id, email: user.email, role: user.role };
+
+    return {
+      accessToken: this.jwtService.sign(payload, { expiresIn: '15m' }),
+      refreshToken: this.jwtService.sign(payload, { expiresIn: '7d' }),
+    };
+  }
+
+  async register(createAuthInput: CreateAuthInput): Promise<LoginResponse> {
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: createAuthInput.email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException('User with this email already exists');
+    }
+
+    const hashPassword = await bcrypt.hash(
+      createAuthInput.password,
+      Number(process.env.SALT_ROUNDS) || 10,
+    );
+
+    const user = await this.prisma.user.create({
+      data: {
+        ...createAuthInput,
+        password: hashPassword,
+        role: UserRole.CUSTOMER,
+      },
+    });
+
+    const { accessToken, refreshToken } = this.generateTokens(user);
+
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        name: `${user.firstName} ${user.lastName}`,
+        email: user.email,
+      },
+    };
+  }
+
+  async update(id: string, updateAuthInput: UpdateAuthInput) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (updateAuthInput.password) {
+      // Compare new password with existing one
+      const isSamePassword = await bcrypt.compare(
+        updateAuthInput.password,
+        user.password,
+      );
+
+      if (isSamePassword) {
+        throw new ConflictException(
+          'New password cannot be the same as the old password',
+        );
+      }
+
+      updateAuthInput.password = await bcrypt.hash(
+        updateAuthInput.password,
+        10,
+      );
+    }
+
+    return this.prisma.user.update({
+      where: { id },
+      data: updateAuthInput,
+    });
+  }
+
+  async login(loginInput: LoginInput) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: loginInput.email },
+    });
+
+    if (!user) {
+      throw new NotFoundException('This user cannot does not exist');
+    }
+
+    const isSamePassword = await bcrypt.compare(
+      loginInput.password,
+      user.password,
+    );
+
+    if (!isSamePassword) {
+      throw new UnauthorizedException('Password is not correct');
+    }
+
+    const { accessToken, refreshToken } = this.generateTokens(user);
+
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        name: `${user.firstName} ${user.lastName}`,
+        email: user.email,
+      },
+    };
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} auth`;
+  }
+  async updateUserRole(userId: string, role: UserRole) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { role },
+    });
+  }
+}
