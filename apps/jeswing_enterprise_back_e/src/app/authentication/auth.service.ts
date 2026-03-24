@@ -11,20 +11,33 @@ import * as bcrypt from 'bcrypt';
 import { UserRole } from '../../generated/prisma/enums';
 import { JwtService } from '@nestjs/jwt';
 import { LoginResponse } from './dto/auth-response';
+import { Auth } from './entities/auth.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly configservice: ConfigService,
   ) {}
 
   private generateTokens(user: { id: string; email: string; role: UserRole }) {
     const payload = { sub: user.id, email: user.email, role: user.role };
 
     return {
-      accessToken: this.jwtService.sign(payload, { expiresIn: '15m' }),
-      refreshToken: this.jwtService.sign(payload, { expiresIn: '7d' }),
+      accessToken: this.jwtService.sign(payload, {
+        secret: this.configservice.get<string>('jwt.secret'),
+        expiresIn: this.configservice.get<string>(
+          'jwt.expiresIn',
+        ) as `${number}${'s' | 'm' | 'h' | 'd'}`,
+      }),
+      refreshToken: this.jwtService.sign(payload, {
+        secret: this.configservice.get<string>('jwt.refreshSecret'),
+        expiresIn: this.configservice.get<string>(
+          'jwt.refreshExpiresIn',
+        ) as `${number}${'s' | 'm' | 'h' | 'd'}`,
+      }),
     };
   }
 
@@ -128,13 +141,19 @@ export class AuthService {
     };
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} auth`;
   }
   async updateUserRole(userId: string, role: UserRole) {
     return this.prisma.user.update({
       where: { id: userId },
       data: { role },
+    });
+  }
+
+  async me(userId: string): Promise<Auth> {
+    return this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
     });
   }
 }

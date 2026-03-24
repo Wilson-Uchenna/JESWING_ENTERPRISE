@@ -6,9 +6,14 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { ProductsModule } from './products/products.module';
 import { AuthModule } from './authentication/auth.module';
+import { ConfigModule } from '@nestjs/config';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true, // 👈 makes env available everywhere without re-importing
+    }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(
@@ -18,6 +23,7 @@ import { AuthModule } from './authentication/auth.module';
     }),
     ProductsModule,
     AuthModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

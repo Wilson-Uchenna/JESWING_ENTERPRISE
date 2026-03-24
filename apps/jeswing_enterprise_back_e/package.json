@@ -87,6 +87,7 @@
     "@as-integrations/express5": "^1.1.2",
     "@nestjs/apollo": "^13.2.4",
     "@nestjs/common": "^11.0.0",
+    "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.0.0",
     "@nestjs/graphql": "^13.2.4",
     "@nestjs/jwt": "^11.0.2",
