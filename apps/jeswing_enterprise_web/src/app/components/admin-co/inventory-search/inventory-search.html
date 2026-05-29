@@ -1,0 +1,229 @@
+<div class="min-h-screen bg-[#090c14] text-white">
+
+  <!-- ── TOPBAR ── -->
+  <header class="bg-[#0e1525] border-b border-white/[0.05] px-6 py-3 flex items-center justify-between sticky top-0 z-30">
+
+    <!-- Search bar (prominent, matches design) -->
+    <div class="relative w-96">
+      <fa-icon [icon]="faSearch" class="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 text-xs" />
+      <input
+        type="text"
+        placeholder="Search inventory..."
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+        (keydown)="onSearch($event)"
+        class="w-full bg-[#131b2e] border border-white/[0.08] rounded-xl pl-10 pr-4 py-2.5
+               text-sm text-white placeholder-white/25 outline-none
+               focus:border-[#ff6200]/50 focus:ring-1 focus:ring-[#ff6200]/20 transition-all"
+      />
+    </div>
+
+    <!-- Right actions -->
+    <div class="flex items-center gap-4">
+      <button class="relative text-[#ff6200] hover:bg-white/5 w-8 h-8 flex items-center justify-center rounded-full transition-colors">
+        <fa-icon [icon]="faBell" />
+        <span class="absolute top-1 right-1 w-2 h-2 bg-[#ff6200] rounded-full border border-[#0e1525]"></span>
+      </button>
+      <button class="text-[#ff6200] hover:bg-white/5 w-8 h-8 flex items-center justify-center rounded-full transition-colors">
+        <fa-icon [icon]="faGear" />
+      </button>
+      <span class="text-xs font-bold tracking-widest text-white/40 uppercase">Admin Terminal</span>
+    </div>
+  </header>
+
+  <div class="px-6 pt-5 pb-12 space-y-5">
+
+    <!-- ── PAGE TITLE ── -->
+    <div class="flex items-start justify-between">
+      <div>
+        <!-- Back link -->
+        <button
+          (click)="backToInventory()"
+          class="group flex items-center gap-2 text-[#ff6200] text-xs font-bold tracking-wide mb-3
+                 border border-dashed border-[#ff6200]/40 rounded px-3 py-1.5
+                 hover:bg-[#ff6200]/10 transition-colors"
+        >
+          <fa-icon [icon]="faArrowLeft" class="text-[10px] transition-transform group-hover:-translate-x-0.5" />
+          Back to Inventory
+        </button>
+
+        <h1 class="text-3xl font-black tracking-wide">Inventory Search Results</h1>
+        <p class="text-sm text-white/40 mt-1">
+          Showing results for
+          <span class="text-[#ff6200] font-bold italic">"{{ searchQuery() || 'All items' }}"</span>
+          — {{ results().length }} item{{ results().length !== 1 ? 's' : '' }} found
+        </p>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-3 mt-1">
+        <button class="flex items-center gap-2 bg-[#0f1520] border border-white/[0.08] text-white/50 text-xs font-bold
+                       tracking-widest uppercase px-4 py-2.5 rounded-xl hover:border-white/20 hover:text-white transition-all">
+          <fa-icon [icon]="faFilter" class="text-xs" />
+          Filter
+        </button>
+        <button class="flex items-center gap-2 bg-[#ff6200] hover:bg-[#e55700] text-white text-xs font-bold
+                       tracking-widest uppercase px-4 py-2.5 rounded-xl transition-colors">
+          <fa-icon [icon]="faDownload" class="text-xs" />
+          Export Results
+        </button>
+      </div>
+    </div>
+
+    <!-- ── STAT MINI-CARDS ── -->
+    <div class="flex gap-4">
+      <div class="bg-[#0f1520] border-l-4 border-l-[#ff6200] border border-white/[0.06] rounded-xl px-5 py-4 min-w-[140px]">
+        <p class="text-[10px] font-bold tracking-widest text-white/35 uppercase mb-2">Total Matches</p>
+        <p class="text-3xl font-black tracking-tight">
+          {{ results().length.toString().padStart(2, '0') }}
+        </p>
+      </div>
+      <div class="bg-[#0f1520] border-l-4 border-l-[#ef4444] border border-white/[0.06] rounded-xl px-5 py-4 min-w-[140px]">
+        <p class="text-[10px] font-bold tracking-widest text-white/35 uppercase mb-2">Alert Status</p>
+        <p class="text-3xl font-black tracking-tight text-red-400">
+          {{ alertCount().toString().padStart(2, '0') }}
+        </p>
+      </div>
+    </div>
+
+    <!-- ── RESULTS TABLE ── -->
+    <div class="bg-[#0f1520] border border-white/[0.06] rounded-2xl overflow-hidden">
+
+      <!-- Column headers -->
+      <div class="grid grid-cols-[2fr_140px_130px_120px_160px_80px] items-center
+                  px-6 py-3 border-b border-white/[0.05] bg-[#0b0f1e]/50">
+        @for (col of ['PRODUCT INFO','SKU / ID','CATEGORY','STATUS','STOCK LEVEL','ACTIONS']; track col) {
+          <p class="text-[10px] font-bold tracking-widest text-white/30 uppercase">{{ col }}</p>
+        }
+      </div>
+
+      <!-- Result rows -->
+      @for (item of results(); track item.skuId; let last = $last) {
+        <div
+          class="grid grid-cols-[2fr_140px_130px_120px_160px_80px] items-center px-6 py-4
+                 hover:bg-white/[0.02] transition-colors"
+          [class.border-b]="!last"
+          [class.border-white/[0.05]]="!last"
+        >
+
+          <!-- Product info -->
+          <div class="flex items-center gap-3 pr-4">
+            <div class="w-10 h-10 rounded-xl border flex items-center justify-center shrink-0"
+                 [class]="iconBg(item.category)">
+              <!-- Category icon placeholder -->
+              <svg width="16" height="16" [attr.fill]="iconColor(item.category)" viewBox="0 0 16 16">
+                <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-bold leading-tight">{{ item.productName }}</p>
+              <p class="text-[11px] text-white/30 mt-0.5">{{ item.subCategory }}</p>
+            </div>
+          </div>
+
+          <!-- SKU -->
+          <p class="text-xs font-bold text-[#ff6200] tracking-wide">{{ item.skuId }}</p>
+
+          <!-- Category -->
+          <p class="text-[11px] font-bold tracking-widest text-white/40 uppercase">{{ item.category }}</p>
+
+          <!-- Status -->
+          <div class="flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full shrink-0" [class]="statusDot(item.status)"></span>
+            <span class="text-[11px] font-bold tracking-widest uppercase" [class]="statusText(item.status)">
+              {{ item.status }}
+            </span>
+          </div>
+
+          <!-- Stock level bar -->
+          <div>
+            <div class="h-1.5 bg-white/[0.06] rounded-full mb-1.5 w-32">
+              <div class="h-1.5 rounded-full transition-all duration-500"
+                   [style.width.%]="item.stockLevel"
+                   [style.background]="stockBarColor(item)">
+              </div>
+            </div>
+            <p class="text-[11px] text-white/40">{{ formatStock(item) }}</p>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex justify-center">
+            <button class="w-8 h-8 flex items-center justify-center text-white/25 hover:text-[#ff6200]
+                           hover:bg-[#ff6200]/10 rounded-lg transition-colors border border-transparent
+                           hover:border-[#ff6200]/20">
+              <fa-icon [icon]="faEdit" class="text-xs" />
+            </button>
+          </div>
+
+        </div>
+      }
+
+      <!-- Empty state -->
+      @if (results().length === 0) {
+        <div class="flex flex-col items-center justify-center py-20 text-white/20">
+          <fa-icon [icon]="faSearch" class="text-4xl mb-4" />
+          <p class="text-sm font-bold">No results found</p>
+          <p class="text-xs mt-1">Try a different search term</p>
+        </div>
+      }
+    </div>
+
+    <!-- ── BOTTOM ROW ── -->
+    <div class="grid grid-cols-2 gap-4">
+
+      <!-- Need to Restock? -->
+      <div class="relative bg-[#0f1520] border border-white/[0.06] rounded-2xl p-6 overflow-hidden">
+        <div class="relative z-10 max-w-xs">
+          <h3 class="text-xl font-black mb-2">Need to Restock?</h3>
+          <p class="text-sm text-white/40 leading-relaxed mb-5">
+            Automate your
+            <span class="text-white/70">'{{ searchQuery() || "Industrial" }}'</span>
+            category replenishment. Connect with top-tier suppliers for
+            <span class="text-white/70">'{{ results()[0]?.productName ?? "your products" }}'</span>
+            directly from the terminal.
+          </p>
+          <button class="group flex items-center gap-3 bg-[#ff6200] hover:bg-[#e55700] text-white text-xs font-black
+                         tracking-widest uppercase px-5 py-3 rounded-xl transition-all">
+            Manage Suppliers
+            <fa-icon [icon]="faArrowRight" class="transition-transform group-hover:translate-x-1" />
+          </button>
+        </div>
+
+        <!-- Decorative image placeholder -->
+        <div class="absolute right-0 top-0 bottom-0 w-44 overflow-hidden rounded-r-2xl">
+          <div class="w-full h-full bg-gradient-to-l from-[#1a1200] via-[#2d1b00] to-transparent opacity-80"></div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-32 h-32 rounded-full bg-[#ff6200]/10 border border-[#ff6200]/20 flex items-center justify-center">
+              <svg width="40" height="40" fill="#ff6200" opacity="0.4" viewBox="0 0 16 16">
+                <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Smart Insights -->
+      <div class="bg-[#0f1520] border border-white/[0.06] rounded-2xl p-6">
+        <div class="flex items-center gap-2 mb-3">
+          <svg width="16" height="16" fill="#60a5fa" viewBox="0 0 16 16">
+            <path d="M7.657 6.247c.11-.33.576-.33.686 0l.645 1.937a2.89 2.89 0 0 0 1.829 1.828l1.936.645c.33.11.33.576 0 .686l-1.937.645a2.89 2.89 0 0 0-1.828 1.829l-.645 1.936a.361.361 0 0 1-.686 0l-.645-1.937a2.89 2.89 0 0 0-1.828-1.828l-1.937-.645a.361.361 0 0 1 0-.686l1.937-.645a2.89 2.89 0 0 0 1.828-1.828l.645-1.937zM3.794 1.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387A1.734 1.734 0 0 0 4.593 5.69l-.387 1.162a.217.217 0 0 1-.412 0L3.407 5.69A1.734 1.734 0 0 0 2.31 4.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387A1.734 1.734 0 0 0 3.407 2.31l.387-1.162zM10.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732L9.1 2.137a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L10.863.1z"/>
+          </svg>
+          <h3 class="text-sm font-black text-[#60a5fa] tracking-wide">Smart Insights</h3>
+        </div>
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          <span class="text-white/80 font-bold">{{ searchQuery() || 'Industrial' }}</span>
+          category items have seen a
+          <span class="text-[#ff6200] font-bold">14% increase</span>
+          in demand over the last 30 days. Consider adjusting low stock thresholds.
+        </p>
+        <button class="flex items-center gap-2 text-[11px] font-black tracking-widest uppercase text-[#60a5fa]
+                       hover:text-blue-300 transition-colors">
+          <fa-icon [icon]="faChartLine" class="text-xs" />
+          Analytics Report
+          <fa-icon [icon]="faArrowRight" class="text-[9px]" />
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

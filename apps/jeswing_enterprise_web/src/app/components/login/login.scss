@@ -1,0 +1,29 @@
+.slide-enter {
+  animation: slideEnter 600ms ease-out forwards;
+}
+
+.slide-leave {
+  animation: slideLeave 600ms ease-in forwards;
+}
+
+@keyframes slideEnter {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideLeave {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+}

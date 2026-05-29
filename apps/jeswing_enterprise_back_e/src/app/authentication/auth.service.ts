@@ -13,6 +13,7 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginResponse } from './dto/auth-response';
 import { Auth } from './entities/auth.entity';
 import { ConfigService } from '@nestjs/config';
+import { TokenPayload } from './interfaces/token.interface';
 
 @Injectable()
 export class AuthService {
@@ -72,6 +73,7 @@ export class AuthService {
         id: user.id,
         name: `${user.firstName} ${user.lastName}`,
         email: user.email,
+          role: user.role,
       },
     };
   }
@@ -137,6 +139,7 @@ export class AuthService {
         id: user.id,
         name: `${user.firstName} ${user.lastName}`,
         email: user.email,
+        role: user.role,
       },
     };
   }
@@ -156,4 +159,24 @@ export class AuthService {
       where: { id: userId },
     });
   }
+
+ async refreshTokens(token: string) {
+  let payload: TokenPayload;
+
+  try {
+    payload = this.jwtService.verify<TokenPayload>(token, {
+      secret: this.configservice.get('jwt.refreshSecret'),
+    });
+  } catch {
+    throw new UnauthorizedException('Invalid or expired refresh token');
+  }
+
+  const user = await this.prisma.user.findUnique({
+    where: { id: payload.sub },
+  });
+
+  if (!user) throw new NotFoundException('User not found');
+
+  return this.generateTokens(user);
+}
 }

@@ -21,10 +21,12 @@ model Product {
   stripePriceId String
   isFeatured    Boolean?    @default(false)
   orderItems    OrderItem[]
+  cartItems     CartItem[]
   categoryId    String
   category      Category    @relation(fields: [categoryId], references: [id])
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+  
 }
 
 model Order {
@@ -58,14 +60,43 @@ model User {
   role      UserRole @default(CUSTOMER)
 
   orders Order[]
+  cart   Cart?
 }
 
 model Category {
-  id        String    @id @default(uuid())
-  name      String
-  slug      String    @unique()
-  createdAt DateTime  @default(now())
-  products  Product[]
+  id          String    @id @default(uuid())
+  name        String
+  description String
+  slug        String    @unique()
+  createdAt   DateTime  @default(now())
+  products    Product[]
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id])
+
+  items     CartItem[]
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id         String    @id @default(uuid())
+
+  cartId     String
+  cart       Cart      @relation(fields: [cartId], references: [id], onDelete: Cascade)
+
+  productId  String
+  product    Product   @relation(fields: [productId], references: [id])
+
+  quantity   Int       @default(1)
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
 enum OrderStatus {

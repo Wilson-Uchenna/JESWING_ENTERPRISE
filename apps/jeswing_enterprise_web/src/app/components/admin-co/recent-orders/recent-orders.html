@@ -1,0 +1,38 @@
+ <div class="bg-[#131b30] border border-white/[0.06] rounded-lg p-5">
+      <div class="flex items-center justify-between mb-4">
+        <p class="font-semibold text-sm tracking-wide">Recent Orders</p>
+        <a href="#" class="text-[11px] text-[#ff7a1f] font-semibold tracking-wide hover:text-[#ffa05a] transition-colors">
+          See all transactions →
+        </a>
+      </div>
+ 
+      <!-- Header -->
+      <div class="grid grid-cols-4 text-[10px] tracking-widest text-white/25 uppercase pb-2 border-b border-white/5">
+        <span>Order ID</span>
+        <span>Customer</span>
+        <span>Status</span>
+        <span class="text-right">Total</span>
+      </div>
+ 
+      <!-- Rows -->
+      @for (order of orders; track order.id; let last = $last) {
+        <div [class]="'grid grid-cols-4 items-center py-3 hover:bg-[#ff6200]/[0.03] transition-colors ' + (!last ? 'border-b border-white/[0.04]' : '')">
+ 
+          <span class="font-mono text-xs text-white/40">{{ order.id }}</span>
+ 
+          <div class="flex items-center gap-2">
+            <div [class]="'w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0 ' + order.avatarClass">
+              {{ order.initials }}
+            </div>
+            <span class="text-xs text-white/70">{{ order.customer }}</span>
+          </div>
+ 
+          <div class="flex items-center gap-1.5">
+            <span [class]="'w-[7px] h-[7px] rounded-full inline-block ' + statusDot(order.status)"></span>
+            <span [class]="'text-xs font-semibold ' + statusText(order.status)">{{ order.status }}</span>
+          </div>
+ 
+          <span class="font-mono text-xs text-right text-white/80">{{ order.total }}</span>
+        </div>
+      }
+    </div>

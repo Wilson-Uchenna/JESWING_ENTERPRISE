@@ -12,24 +12,22 @@ import slugify from 'slugify';
 export class CategoriesService {
   constructor(private readonly prisma: PrismaService) {}
   async create(createCategoryInput: CreateCategoryInput) {
-    const user = this.prisma.user.findFirst({
-      where: { }
-    })
-    const slug = slugify(createCategoryInput.name, {
-      lower: true, // electronics
-      strict: true, // removes special characters
-    });
-    const existing = await this.prisma.category.findFirst({ where: { slug } });
-    if (existing)
-      throw new ConflictException('Category with this name already exists');
+  const slug = slugify(createCategoryInput.name, {
+    lower: true,
+    strict: true,
+  });
 
-    return this.prisma.category.create({
-      data: {
-        ...createCategoryInput,
-        slug,
-      },
-    });
-  }
+  const existing = await this.prisma.category.findFirst({ where: { slug } });
+  if (existing)
+    throw new ConflictException('Category with this name already exists');
+
+  return this.prisma.category.create({
+    data: {
+      ...createCategoryInput,
+      slug,
+    },
+  });
+}
 
   async findAll() {
     return this.prisma.category.findMany({

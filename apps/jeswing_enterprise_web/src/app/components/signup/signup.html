@@ -1,0 +1,201 @@
+<div class="flex items-center justify-center px-4">
+  <div class="flex flex-col lg:flex-row-reverse gap-6 w-full max-w-5xl">
+    <!-- < -- FORM -->
+    <div class="w-full lg:w-1/2 bg-base-100 rounded-2xl shadow-2xl p-8">
+      <h1 class="text-3xl font-bold text-white mb-1">Create Account</h1>
+      <input
+        type="text"
+        class="input input-sm w-full mb-6 text-gray-400 bg-base-200 border-none text-sm"
+        placeholder="Sign up to create your account and start using our services."
+        readonly
+      />
+
+      <div class="flex gap-3">
+        <button
+          class="btn bg-base-200 hover:bg-base-300 text-white border-none flex-1 gap-2"
+        >
+          <img
+            src="https://www.google.com/favicon.ico"
+            class="w-4 h-4"
+            alt="Google"
+          />
+          Google
+        </button>
+        <button
+          class="btn bg-base-200 hover:bg-base-300 text-white border-none flex-1 gap-2"
+        >
+          <fa-icon
+            [icon]="faAppleAlt"
+            class="text-xl"
+            style="color: rgb(20, 35, 66)"
+          ></fa-icon>
+          Apple
+        </button>
+      </div>
+      <div class="divider text-gray-500 text-xs">Or continue with</div>
+
+      @if (authStore.error()) {
+      <div class="alert alert-error mb-4 text-sm">{{ authStore.error() }}</div>
+      }
+
+      <div class="flex flex-col gap-4">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <label class="label text-sm text-gray-400 mb-1 mt-2"></label>
+            <div class="relative">
+              <input
+                type="text"
+                class="input w-full pr-10"
+                placeholder="John"
+                [value]="firstName()"
+                (input)="firstName.set($any($event.target).value)"
+              />
+              <span
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+              >
+                <fa-icon [icon]="faUser" class="text-xl"></fa-icon
+              ></span>
+            </div>
+          </div>
+          <div>
+            <label class="label text-sm text-gray-400 mb-1 mt-2"></label>
+            <div class="relative">
+              <input
+                type="text"
+                class="input w-full pr-10"
+                placeholder="Doe"
+                [value]="lastName()"
+                (input)="lastName.set($any($event.target).value)"
+              />
+              <span
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+              >
+                <fa-icon [icon]="faUser" class="text-xl"></fa-icon
+              ></span>
+            </div>
+          </div>
+        </div>
+        <!-- Email -->
+        <div>
+          <label class="label text-sm text-gray-400 mb-1">Email Address</label>
+          <div class="relative">
+            <input
+              type="email"
+              class="input w-full pr-10"
+              placeholder="john@example.com"
+              [value]="email()"
+              (input)="email.set($any($event.target).value)"
+            />
+            <span
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+              >✉</span
+            >
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="label text-sm text-gray-400">Password</label>
+            </div>
+            <div class="relative">
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                class="input w-full pr-10"
+                placeholder="••••••••"
+                [value]="password()"
+                (input)="password.set($any($event.target).value)"
+              />
+              <button
+                (click)="showPassword = !showPassword"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+              >
+                {{ showPassword ? '👁' : '🙈' }}
+              </button>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label class="label text-sm text-gray-400"
+                >Confirm Password</label
+              >
+            </div>
+            <div class="relative">
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                class="input w-full pr-10"
+                placeholder="••••••••"
+                [value]="confirmPassword()"
+                (input)="confirmPassword.set($any($event.target).value)"
+              />
+              <button
+                (click)="showPassword = !showPassword"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+              >
+                {{ showPassword ? '👁' : '🙈' }}
+              </button>
+            </div>
+          </div>
+        </div>
+        <div>
+          @if (password() && confirmPassword() && password() !==
+          confirmPassword()) {
+          <p class="text-error text-xs -mt-2">Passwords do not match</p>
+          }
+          <div>
+            <input
+              type="checkbox"
+              class="inline me-3"
+              [checked]="agreed()"
+              (change)="agreed.set($any($event.target).checked)"
+            />
+            <p class="inline-block">
+              I agree to the
+              <span class="text-orange-400">Terms of service</span> and
+              <span class="text-orange-400">Privacy Policy</span>
+            </p>
+          </div>
+        </div>
+        <div>
+          <button
+            class="btn btn-info text-white mx-auto"
+            type="button"
+            [disabled]="authStore.loading() || !agreed() || password() !== confirmPassword()"
+            (click)="register()"
+          >
+            @if (authStore.loading()) {
+            <span class="loading loading-spinner loading-sm"></span>
+            } @else { Create Account }
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="hidden lg:block w-full lg:w-1/2 relative rounded-2xl overflow-hidden min-h-96"
+    >
+      <div class="absolute inset-0">
+        <img src="nice.png" alt="" class="w-full h-full object-cover" />
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"
+        ></div>
+        <div class="absolute bottom-12 left-8 text-white">
+          <div
+            class="bg-cyan-500/20 rounded-full flex items-center justify-center w-15 h-15 opacity-60"
+          >
+            <fa-icon [icon]="faBoxArchive" class="text-xl"></fa-icon>
+          </div>
+
+          <h2 class="text-3xl font-bold max-w-xs leading-tight mt-2">
+            Stock up your world.
+          </h2>
+          <p class="text-sm text-gray-300 mt-2 max-w-xs">
+            Join thousands of businessesand homes finding their perfect
+            stationery and supplies with Jeswing Enterprise
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,233 @@
+<div class="store-root min-h-screen bg-[#090c14] text-white font-display overflow-x-hidden">
+
+  <!-- ── NAVBAR ── -->
+   <div class="flex items-center gap-2">
+  <div class="w-5 h-5 bg-[#ff6200] rounded flex items-center justify-center">
+    <svg width="9" height="9" viewBox="0 0 9 9" fill="white">
+      <rect x="0" y="0" width="3.5" height="3.5"/><rect x="5.5" y="0" width="3.5" height="3.5"/>
+      <rect x="0" y="5.5" width="3.5" height="3.5"/><rect x="5.5" y="5.5" width="3.5" height="3.5"/>
+    </svg>
+  </div>
+
+  
+    <a routerLink="/"
+    routerLinkActive="!text-[#ff6200]"
+    [routerLinkActiveOptions]="{ exact: true }"
+    class="text-xs font-bold tracking-widest uppercase text-white/50"
+  >
+    Home
+  </a>
+
+  <span class="text-white/20 mx-1">/</span>
+
+  
+    <a routerLink="/store"
+    routerLinkActive="!text-[#ff6200]"
+    [routerLinkActiveOptions]="{ exact: true }"
+    class="text-xs font-bold tracking-widest uppercase text-white/50"
+  >
+    Store
+  </a>
+</div>
+
+  <!-- ── HERO ── -->
+  <section class="relative pt-2 overflow-hidden">
+    <div class="hero-bg absolute inset-0 z-0">
+      <!-- Warehouse background simulation -->
+      <div class="absolute inset-0 bg-gradient-to-br from-[#1a0a00] via-[#0d0d0d] to-[#090c14]"></div>
+      <!-- Shelf grid pattern -->
+      <div class="absolute inset-0 opacity-[0.08]"
+           style="background-image: repeating-linear-gradient(90deg, #ff6200 0px, transparent 1px, transparent 60px),
+                                    repeating-linear-gradient(0deg, #ff6200 0px, transparent 1px, transparent 40px);"></div>
+      <!-- Orange glow -->
+      <div class="absolute top-0 right-0 w-96 h-96 bg-[#ff6200]/20 rounded-full blur-[120px]"></div>
+      <div class="absolute bottom-0 left-1/3 w-64 h-64 bg-[#ff3300]/10 rounded-full blur-[80px]"></div>
+    </div>
+
+    <div class="relative z-10 px-6 py-14 max-w-lg">
+      <div class="inline-flex items-center gap-2 bg-[#ff6200]/15 border border-[#ff6200]/30 rounded px-3 py-1 mb-5">
+        <span class="w-1.5 h-1.5 bg-[#ff6200] rounded-full animate-pulse"></span>
+        <span class="text-[10px] font-bold tracking-widest text-[#ff6200] uppercase">Precision Quality</span>
+      </div>
+
+      <h1 class="hero-title text-5xl font-black leading-none tracking-tight mb-4">
+        PRO-GRADE
+        <span class="text-[#ff6200]"> SUPPLY</span>
+        <br />HUB
+      </h1>
+
+      <p class="text-sm text-white/45 leading-relaxed mb-7 max-w-sm">
+        From technical instruments to industrial packing, we reconcile rigorous organisation
+        with high-energy commerce. Elevate your workspace with the Amber Store collection.
+      </p>
+
+      <button (click)="productNavigate()" class="group flex items-center gap-3 bg-[#ff6200] hover:bg-[#e55700] text-white text-xs font-bold tracking-widest uppercase px-6 py-3 rounded transition-all duration-200 hover:gap-4">
+        VIEW FULL CATALOG
+        <fa-icon [icon]="faArrowRight" class="text-xs transition-transform group-hover:translate-x-1" />
+      </button>
+    </div>
+
+    <!-- Hero visual accent — stacked rectangles suggesting shelves -->
+    <div class="absolute right-0 top-12 bottom-0 w-40 opacity-30 pointer-events-none">
+      @for (i of [0,1,2,3,4,5,6]; track i) {
+        <div class="h-8 mb-1 rounded-l"
+             [style.background]="'linear-gradient(90deg, transparent, rgba(255,98,0,' + (0.05 + i*0.04) + '))'">
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ── CORE CATEGORIES ── -->
+  <section class="px-6 py-10">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="w-px h-4 bg-[#ff6200]"></div>
+      <p class="text-[10px] font-bold tracking-widest text-white/40 uppercase">Store Fronts</p>
+    </div>
+    <h2 class="text-xl font-black tracking-wide mb-6">CORE CATEGORIES</h2>
+
+    <div class="grid grid-cols-2 gap-3">
+      @for (cat of categories; track cat.name; let i = $index) {
+        <div
+          class="category-card relative rounded-xl overflow-hidden cursor-pointer group"
+          [class.col-span-2]="i === 0 && false"
+          style="height: 160px;"
+        >
+          <!-- Background gradient -->
+          <div class="absolute inset-0 bg-gradient-to-br transition-all duration-500 group-hover:scale-105"
+               [class]="cat.gradient"></div>
+
+          <!-- Noise texture overlay -->
+          <div class="absolute inset-0 opacity-[0.04]"
+               style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22/%3E%3C/svg%3E');
+                      background-size: 200px;"></div>
+
+          <!-- Accent corner glow -->
+          <div class="absolute -bottom-8 -right-8 w-32 h-32 rounded-full blur-2xl opacity-40 transition-opacity group-hover:opacity-70"
+               [style.background]="cat.accentColor"></div>
+
+          <!-- Content -->
+          <div class="absolute inset-0 p-4 flex flex-col justify-end">
+            <h3 class="text-sm font-black tracking-wide leading-tight mb-1">{{ cat.name }}</h3>
+            <p class="text-[10px] text-white/40 leading-snug mb-3 line-clamp-2">{{ cat.description }}</p>
+            <button
+              class="self-start flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase border px-3 py-1.5 rounded transition-all duration-200 hover:text-white"
+              [style.borderColor]="cat.accentColor + '60'"
+              [style.color]="cat.accentColor"
+              [style.background]="cat.accentColor + '12'"
+            >
+              EXPLORE
+            </button>
+          </div>
+
+          <!-- Top-right tag -->
+          <div class="absolute top-3 right-3 w-6 h-6 rounded flex items-center justify-center opacity-30 group-hover:opacity-60 transition-opacity"
+               [style.background]="cat.accentColor + '30'">
+            <fa-icon [icon]="faChevronRight" class="text-[9px]" [style.color]="cat.accentColor" />
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ── TRENDING NOW ── -->
+  <section class="px-6 py-8">
+    <div class="flex items-center gap-3 mb-2">
+      <div class="w-px h-4 bg-[#ff6200]"></div>
+      <p class="text-[10px] font-bold tracking-widest text-white/40 uppercase">Hand-Picked</p>
+    </div>
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-black tracking-wide">TRENDING NOW</h2>
+      <div class="flex items-center gap-2">
+        <button
+          (click)="prevSlide()"
+          class="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:border-[#ff6200]/60 hover:text-[#ff6200] transition-all"
+        >
+          <fa-icon [icon]="faArrowLeft" class="text-xs" />
+        </button>
+        <button
+          (click)="nextSlide()"
+          class="w-8 h-8 rounded-full bg-[#ff6200] flex items-center justify-center text-white hover:bg-[#e55700] transition-colors"
+        >
+          <fa-icon [icon]="faArrowRight" class="text-xs" />
+        </button>
+      </div>
+    </div>
+
+    <!-- Product cards scroll -->
+    <div class="flex gap-3 overflow-x-auto pb-3 snap-x snap-mandatory scrollbar-hide -mx-6 px-6">
+      @for (product of products; track product.id) {
+        <div class="product-card snap-start shrink-0 w-36 rounded-xl overflow-hidden border border-white/[0.06] bg-[#0f1520] group cursor-pointer transition-all duration-200 hover:border-[#ff6200]/30 hover:-translate-y-1">
+
+          <!-- Product image area -->
+          <div class="relative h-28 bg-gradient-to-br overflow-hidden" [class]="product.gradient">
+            <div class="absolute inset-0 flex items-center justify-center text-4xl opacity-60 group-hover:scale-110 transition-transform duration-300">
+              {{ product.icon }}
+            </div>
+            <!-- Glow -->
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0f1520] via-transparent to-transparent"></div>
+
+            @if (product.tag) {
+              <div
+                class="absolute top-2 left-2 text-[9px] font-black tracking-widest px-2 py-0.5 rounded"
+                [style.background]="product.tagColor + '25'"
+                [style.color]="product.tagColor"
+                [style.border]="'1px solid ' + product.tagColor + '40'"
+              >
+                {{ product.tag }}
+              </div>
+            }
+          </div>
+
+          <!-- Product info -->
+          <div class="p-3">
+            <p class="text-[11px] font-bold leading-tight mb-1 line-clamp-2">{{ product.name }}</p>
+            <p class="text-[10px] text-white/30 mb-2 line-clamp-1">Premium quality item</p>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-black text-[#ff6200]">{{ product.price }}</span>
+              <button
+                (click)="addToCart(product)"
+                class="w-6 h-6 rounded bg-[#ff6200]/15 border border-[#ff6200]/30 flex items-center justify-center text-[#ff6200] hover:bg-[#ff6200] hover:text-white transition-all"
+              >
+                <fa-icon [icon]="faCartShopping" class="text-[9px]" />
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="flex gap-1.5 mt-4 justify-center">
+      @for (product of products; track product.id; let i = $index) {
+        <div
+          class="h-0.5 rounded-full transition-all duration-300"
+          [class.w-6]="i === activeSlide()"
+          [class.w-2]="i !== activeSlide()"
+          [class.bg-[#ff6200]]="i === activeSlide()"
+          [class.bg-white/15]="i !== activeSlide()"
+        ></div>
+      }
+    </div>
+  </section>
+
+  <!-- ── TRUSTED BY ── -->
+  <section class="px-6 py-10 border-t border-white/[0.05]">
+    <div class="flex items-center gap-3 mb-2 justify-center">
+      <div class="w-px h-4 bg-[#ff6200]"></div>
+      <p class="text-[10px] font-bold tracking-widest text-white/30 uppercase">Our Partners</p>
+      <div class="w-px h-4 bg-[#ff6200]"></div>
+    </div>
+    <h2 class="text-lg font-black tracking-widest text-center mb-8">TRUSTED BY INDUSTRY</h2>
+
+    <div class="grid grid-cols-3 gap-3">
+      @for (brand of brands; track brand) {
+        <div class="flex items-center justify-center px-3 py-3 rounded-lg border border-white/[0.06] bg-[#0f1520] hover:border-[#ff6200]/20 hover:bg-[#ff6200]/5 transition-all cursor-pointer group">
+          <span class="text-[11px] font-black tracking-widest text-white/25 group-hover:text-white/50 transition-colors">{{ brand }}</span>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Bottom padding -->
+  <div class="h-16"></div>
+</div>

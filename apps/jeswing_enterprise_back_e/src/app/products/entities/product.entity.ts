@@ -1,8 +1,9 @@
-import { ObjectType, Field, Float } from '@nestjs/graphql';
+import { ObjectType, Field, Float, ID } from '@nestjs/graphql';
+import { Category } from '../../categories/entities/category.entity';
 
 @ObjectType()
 export class Product {
-  @Field(() => String)
+   @Field(() => ID)    // ✅ should be ID or String, not Int
   id!: string;
 
   @Field()
@@ -16,6 +17,9 @@ export class Product {
 
   @Field()
   image!: string;
+
+  @Field(() => Category, { nullable: true })
+  category?: Category;
 
   @Field()
   stripePriceId!: string;

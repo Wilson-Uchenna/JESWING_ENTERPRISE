@@ -9,6 +9,7 @@ export class RolesGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const requiredRoles = this.reflector.get<UserRole[]>('roles', context.getHandler());
+    console.log('RolesGuard requiredRoles:', requiredRoles);
     
     // 👇 if no roles are required, allow access
     if (!requiredRoles) return true;
@@ -16,10 +17,12 @@ export class RolesGuard implements CanActivate {
     // 👇 extract user from GraphQL context
     const ctx = GqlExecutionContext.create(context);
     const { user } = ctx.getContext().req;
+    console.log('RolesGuard user:', user);
 
     // 👇 if no user on request, deny access
     if (!user) return false;
 
+    console.log('role match:', requiredRoles.includes(user.role));
     return requiredRoles.includes(user.role);
   }
 }

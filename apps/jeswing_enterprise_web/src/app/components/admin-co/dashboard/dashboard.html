@@ -1,0 +1,64 @@
+<main class="flex-1 flex flex-col min-w-0">
+  <app-topbar />
+
+  <div class="flex-1 overflow-y-auto p-6 space-y-5">
+    <!-- Stat cards -->
+    <app-stat-cards />
+
+    <!-- Chart + Categories -->
+    <div class="grid grid-cols-3 gap-4">
+      <app-sales-chart class="col-span-2" />
+      <app-top-categories />
+    </div>
+
+    <!-- Orders + Inventory -->
+    <div class="grid grid-cols-3 gap-4">
+      <app-recent-orders class="col-span-2" />
+      <app-critical-inventory />
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer
+    class="border-t border-white/5 px-8 py-3 flex items-center justify-between text-[10px] text-white/20 bg-[#0e1525]"
+  >
+    <span
+      >© 2024 KSJECYStoresNG Enterprise Dashboard — Precision Nitely
+      Architecture</span
+    >
+    <div class="flex items-center gap-6">
+      <span class="hover:text-white/50 cursor-pointer transition-colors"
+        >PRIVACY POLICY</span
+      >
+      <span class="hover:text-white/50 cursor-pointer transition-colors"
+        >SYSTEM STATUS</span
+      >
+      <span class="hover:text-white/50 cursor-pointer transition-colors"
+        >API SUPPORT</span
+      >
+    </div>
+  </footer>
+</main>
+<div class="fab">
+  <!-- a focusable div with tabindex is necessary to work on all browsers. role="button" is necessary for accessibility -->
+  <div tabindex="0" role="button" class="btn btn-lg btn-circle btn-primary">
+    +
+  </div>
+
+  <!-- Main Action button replaces the original button when FAB is open -->
+  <div class="fab-main-action">
+    <button class="btn btn-circle btn-secondary btn-lg">X</button>
+  </div>
+
+  <!-- buttons that show up when FAB is open -->
+  <div>
+    <button
+      (click)="store.openModal()"
+      class="btn btn-lg"
+    >
+      Add Category
+    </button>
+  </div>
+</div>
+
+<app-category-modal />

@@ -8,6 +8,8 @@ import { ProductsModule } from './products/products.module';
 import { AuthModule } from './authentication/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { CategoriesModule } from './categories/categories.module';
+import { CartModule } from './cart/cart.module';
+
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { CategoriesModule } from './categories/categories.module';
     ProductsModule,
     AuthModule,
     CategoriesModule,
+    CartModule,
+    
   ],
   controllers: [AppController],
   providers: [AppService],

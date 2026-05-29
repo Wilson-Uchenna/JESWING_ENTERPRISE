@@ -8,11 +8,11 @@ import { UserRole } from '../../generated/prisma/enums';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from './guards/gql-auth.guard';
 import {
-  CurrentUser,
   CurrentUserReq,
 } from './decorators/current-user.decorator';
 import { RolesGuard } from './guards/roles.guard';
 import { Roles } from './decorators/roles.decorator';
+import { LoginResponse } from './dto/auth-response';
 
 @Resolver(() => Auth)
 export class AuthResolver {
@@ -42,19 +42,24 @@ export class AuthResolver {
     return this.authService.remove(id);
   }
 
-    @Mutation(() => Auth)
-    @UseGuards(GqlAuthGuard, RolesGuard)
-    @Roles(UserRole.ADMIN)
-    async updateUserRole(
-      @Args('id') userId: string,
-      @Args('role', { type: () => UserRole }) role: UserRole,
-    ): Promise<Auth> {
-      return this.authService.updateUserRole(userId, role); // p
-    }
+  @Mutation(() => Auth)
+  @UseGuards(GqlAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async updateUserRole(
+    @Args('id') userId: string,
+    @Args('role', { type: () => UserRole }) role: UserRole,
+  ): Promise<Auth> {
+    return this.authService.updateUserRole(userId, role); // p
+  }
 
   @Query(() => Auth)
   @UseGuards(GqlAuthGuard)
   async me(@CurrentUserReq() currentUser: { id: string }): Promise<Auth> {
     return await this.authService.me(currentUser.id);
+  }
+  
+  @Mutation(() => LoginResponse)
+  async refreshToken(@Args('token') token: string) {
+    return this.authService.refreshTokens(token);
   }
 }

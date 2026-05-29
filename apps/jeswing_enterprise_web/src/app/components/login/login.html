@@ -1,0 +1,117 @@
+<div class="flex items-center justify-center px-4 py-4 mt-3">
+  <div class="flex flex-col lg:flex-row gap-6 w-full max-w-5xl">
+
+    <!-- FORM -->
+    <div class="w-full lg:w-1/2 bg-base-100 rounded-2xl shadow-2xl p-8">
+      <h1 class="text-3xl font-bold text-white mb-1">Welcome back!</h1>
+      <input
+        type="text"
+        class="input input-sm w-full mb-6 text-gray-400 bg-base-200 border-none text-sm"
+        placeholder="Please enter your details to access your account."
+        readonly
+      />
+
+      <div class="flex flex-col gap-4">
+        <!-- Email -->
+        <div>
+          <label class="label text-sm text-gray-400 mb-1">Email or Username</label>
+          <div class="relative">
+            <input type="email" class="input w-full pr-10" placeholder="john@example.com" [value]="email()"
+              (input)="email.set($any($event.target).value)"/>
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">✉</span>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="label text-sm text-gray-400">Password</label>
+            <a class="text-orange-500 text-xs hover:underline cursor-pointer">Forgot Password?</a>
+          </div>
+          <div class="relative">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              class="input w-full pr-10"
+              placeholder="••••••••"
+              [value]="password()"
+                (input)="password.set($any($event.target).value)"
+            />
+            <button
+              (click)="showPassword = !showPassword"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+              {{ showPassword ? '👁' : '🙈' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Remember me -->
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" class="checkbox checkbox-sm" />
+          <span class="text-sm text-gray-400">Remember for 30 days</span>
+        </label>
+
+        <!-- Login button -->
+        <button class="btn bg-orange-500 hover:bg-orange-600 text-white border-none w-full mt-2" type="button" (click)="login()">
+          @if (authStore.loading()) {
+            <span class="loading loading-spinner loading-sm"></span>
+            } @else {  Log In → }
+         
+        </button>
+
+        <!-- Divider -->
+        <div class="divider text-gray-500 text-xs">Or continue with</div>
+
+        <!-- Social buttons -->
+        <div class="flex gap-3">
+          <button class="btn bg-base-200 hover:bg-base-300 text-white border-none flex-1 gap-2">
+            <img src="https://www.google.com/favicon.ico" class="w-4 h-4" alt="Google" />
+            Google
+          </button>
+          <button class="btn bg-base-200 hover:bg-base-300 text-white border-none flex-1 gap-2">
+            <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.1.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.48 1 .1-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.13 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.83.57C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            GitHub
+          </button>
+        </div>
+
+        <p class="text-center text-sm text-gray-400">
+          Don't have an account?
+          <a routerLink="/signup" class="text-orange-500 hover:underline">Sign Up</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDESHOW -->
+    <div class="hidden lg:block w-full lg:w-1/2 relative rounded-2xl overflow-hidden min-h-96">
+      @for (slide of slides; track slide.image; let i = $index) {
+        @if (i === currentSlide()) {
+          <div animate.enter="slide-enter" animate.leave="slide-leave" class="absolute inset-0">
+            <img [src]="slide.image" [alt]="slide.title" class="w-full h-full object-cover" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+            <div class="absolute bottom-12 left-8 text-white">
+              <span [class]="slide.badgeClass + ' text-xs font-bold px-3 py-1 rounded-full uppercase mb-4 inline-flex items-center gap-1'">
+                {{ slide.badge }}
+              </span>
+              <h2 class="text-3xl font-bold max-w-xs leading-tight mt-2">{{ slide.title }}</h2>
+              <p class="text-sm text-gray-300 mt-2 max-w-xs">{{ slide.description }}</p>
+            </div>
+          </div>
+        }
+      }
+
+      <!-- line dots -->
+      <div class="absolute bottom-4 left-8 flex gap-2 z-10">
+        @for (slide of slides; track slide.image; let i = $index) {
+          <button
+            (click)="currentSlide.set(i)"
+            [class.w-6]="currentSlide() === i"
+            [class.bg-orange-500]="currentSlide() === i"
+            [class.w-2]="currentSlide() !== i"
+            [class.bg-white/40]="currentSlide() !== i"
+            class="h-1 rounded-full transition-all duration-300">
+          </button>
+        }
+      </div>
+    </div>
+
+  </div>
+</div>

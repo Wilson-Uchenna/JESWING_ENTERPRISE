@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductInput } from './dto/create-product.input';
 import { UpdateProductInput } from './dto/update-product.input';
 import { PrismaService } from '../prisma/prisma.service';
@@ -10,10 +10,28 @@ export class ProductsService {
   ) {
     
   }
-  create(createProductInput: CreateProductInput) {
-    return 'This action adds a new product';
-  }
+   async create(createProductInput: CreateProductInput) {
+    const { categoryId, ...rest } = createProductInput;
 
+    const category = await this.prisma.category.findUnique({
+      where: { id: categoryId },
+    });
+
+    if (!category) {
+      throw new NotFoundException(`Category with id ${categoryId} not found`);
+    }
+
+    return this.prisma.product.create({
+      data: {
+        ...rest,
+        category: {
+          connect: { id: categoryId },
+        },
+      },
+      include: { category: true },
+    });
+  }
+  
   findAll() {
     return this.prisma.product.findMany()
   }
@@ -22,11 +40,21 @@ export class ProductsService {
     return `This action returns a #${id} product`;
   }
 
-  update(id: number, updateProductInput: UpdateProductInput) {
+  update(id: string, updateProductInput: UpdateProductInput) {
     return `This action updates a #${id} product`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+ async remove(id: string) {
+    const product = await this.prisma.product.findUnique({
+      where: { id },
+    });
+
+    if (!product) {
+      throw new NotFoundException(`Product with id ${id} not found`);
+    }
+
+    return this.prisma.product.delete({
+      where: { id },
+    });
   }
 }

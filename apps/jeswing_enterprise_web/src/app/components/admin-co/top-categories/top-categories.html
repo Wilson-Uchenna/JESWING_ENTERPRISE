@@ -1,0 +1,32 @@
+ <div class="bg-[#131b30] border border-white/[0.06] rounded-lg p-5">
+      <p class="font-semibold text-sm tracking-wide mb-4">Top Categories</p>
+ 
+      <div class="space-y-4">
+        @for (cat of categories; track cat.name) {
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <div class="flex items-center gap-2.5">
+                <div [class]="'w-7 h-7 rounded flex items-center justify-center ' + cat.bgClass">
+                  <svg width="13" height="13" [attr.fill]="cat.iconColor" viewBox="0 0 16 16">
+                    <path [attr.d]="cat.iconPath" />
+                  </svg>
+                </div>
+                <span class="text-xs text-white/70 font-medium">{{ cat.name }}</span>
+              </div>
+              <span class="text-xs font-bold text-white/80">{{ cat.percent }}%</span>
+            </div>
+            <div class="h-[3px] bg-white/[0.08] rounded-full">
+              <div
+                class="h-[3px] rounded-full transition-all duration-500"
+                [style.width.%]="cat.percent"
+                [style.background]="cat.color"
+              ></div>
+            </div>
+          </div>
+        }
+      </div>
+ 
+      <button class="mt-6 w-full border border-[#ff6200]/40 text-[#ff7a1f] text-[11px] font-bold tracking-widest py-2 rounded hover:bg-[#ff6200]/10 transition-colors">
+        VIEW FULL REPORT
+      </button>
+    </div>

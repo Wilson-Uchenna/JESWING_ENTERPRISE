@@ -1,0 +1,319 @@
+<div class="min-h-screen bg-[#090c14] text-white pb-12">
+
+  <!-- ── TOPBAR ── -->
+  <header class="bg-[#0e1525] border-b border-white/[0.05] px-6 py-3 flex items-center justify-between sticky top-0 z-30">
+    <!-- Logo -->
+    <div class="border border-dashed border-[#ff6200]/50 rounded px-3 py-1.5">
+      <span class="text-xs font-black tracking-widest text-white">KSJECYSTORESNG</span>
+    </div>
+
+    <!-- Search -->
+    <div class="relative w-64">
+      <fa-icon [icon]="faSearch" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/25 text-xs" />
+      <input
+        type="text"
+        placeholder="Search inventory..."
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+       
+        class="w-full bg-[#131b2e] border border-white/[0.08] rounded-full pl-8 pr-4 py-2 text-xs text-white placeholder-white/25
+               outline-none focus:border-[#ff6200]/40 transition-all"
+      />
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-3">
+      <button class="relative w-8 h-8 flex items-center justify-center text-[#ff6200] hover:bg-white/5 rounded-full transition-colors">
+        <fa-icon [icon]="faBell" />
+        <span class="absolute top-1 right-1 w-2 h-2 bg-[#ff6200] rounded-full border border-[#0e1525]"></span>
+      </button>
+      <button class="w-8 h-8 flex items-center justify-center text-[#ff6200] hover:bg-white/5 rounded-full transition-colors">
+        <fa-icon [icon]="faGear" />
+      </button>
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-[#ff6200] to-[#ff3300] flex items-center justify-center text-[10px] font-black">AU</div>
+    </div>
+  </header>
+
+  <div class="px-6 pt-6 space-y-5">
+
+    @if(searchQuery() === '') {
+        <div class="grid grid-cols-4 gap-4">
+      @for (stat of stats; track stat.label; let i = $index) {
+        <div class="bg-[#0f1520] rounded-xl p-5 border border-white/[0.06]"
+             [class.border-l-4]="i > 0"
+             [class.border-l-[#f59e0b]]="i === 1"
+             [class.border-l-[#ef4444]]="i === 2"
+             [class.border-l-[#60a5fa]]="i === 3">
+          <p class="text-[10px] font-bold tracking-widest text-white/35 uppercase mb-3">{{ stat.label }}</p>
+          <div class="flex items-end gap-2">
+            <p class="text-3xl font-black tracking-tight">{{ stat.value }}</p>
+            @if (stat.sub) {
+              <span class="text-xs font-bold mb-1 leading-none" [style.color]="stat.subColor">
+                {{ stat.sub }}
+                @if (i === 0) { <span class="text-[10px]">↗</span> }
+              </span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- ── MIDDLE ROW ── -->
+    <div class="grid grid-cols-3 gap-4">
+
+      <!-- Stock Trends -->
+      <div class="bg-[#0f1520] rounded-xl border border-white/[0.06] p-5">
+        <div class="flex items-center gap-2 mb-4">
+          <fa-icon [icon]="faTrendUp" class="text-[#ff6200] text-sm" />
+          <p class="text-sm font-bold tracking-wide">Stock Trends <span class="text-white/30 font-normal">(30 Days)</span></p>
+        </div>
+        <svg #chartRef style="width:100%; height:140px; display:block;"></svg>
+      </div>
+
+      <!-- Category Distribution -->
+      <div class="bg-[#0f1520] rounded-xl border border-white/[0.06] p-5">
+        <p class="text-sm font-bold tracking-wide mb-5">Category Distribution</p>
+        <div class="space-y-4">
+          @for (cat of categoryDist; track cat.label) {
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[10px] font-bold tracking-widest text-white/40">{{ cat.label }}</span>
+                <span class="text-[11px] font-bold text-white/70">{{ cat.percent }}%</span>
+              </div>
+              <div class="h-1.5 bg-white/[0.06] rounded-full">
+                <div class="h-1.5 rounded-full transition-all duration-700"
+                     [style.width.%]="cat.percent"
+                     [style.background]="cat.color"></div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Critical Low Stock -->
+      <div class="bg-[#0f1520] rounded-xl border border-white/[0.06] p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <fa-icon [icon]="faCircleExclamation" class="text-[#ff6200] text-sm" />
+            <p class="text-sm font-bold tracking-wide text-[#ff6200]">Critical Low Stock</p>
+          </div>
+          <button class="text-[10px] font-bold tracking-widest text-white/30 hover:text-[#ff6200] transition-colors uppercase">
+            View All
+          </button>
+        </div>
+
+        <div class="space-y-3">
+          @for (item of criticalItems; track item.sku) {
+            <div class="flex items-center gap-3 bg-[#131b2e] rounded-xl p-3 border border-white/[0.05]">
+              <div class="w-7 h-7 bg-red-500/20 border border-red-500/30 rounded-lg flex items-center justify-center shrink-0">
+                <fa-icon [icon]="faTriangleExclamation" class="text-red-400 text-xs" />
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-xs font-bold leading-tight truncate">{{ item.name }}</p>
+                <p class="text-[10px] text-white/30 mt-0.5">{{ item.sku }}</p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-xs font-black text-red-400">{{ item.qty }} left</p>
+                <button class="mt-1 bg-red-500 text-white text-[9px] font-black tracking-widest uppercase px-2 py-0.5 rounded">
+                  REORDER
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+    } @else {
+
+      <h1 class="text-3xl font-black tracking-wide">Inventory Search Results</h1>
+        <p class="text-sm text-white/40 mt-1">
+          Showing results for
+          <span class="text-[#ff6200] font-bold italic">"{{ searchQuery() || 'All items' }}"</span>
+          — {{ results().length }} item{{ results().length !== 1 ? 's' : '' }} found
+        </p>
+
+        <div class="flex gap-4">
+      <div class="bg-[#0f1520] border-l-4 border-l-[#ff6200] border border-white/[0.06] rounded-xl px-5 py-4 min-w-[140px]">
+        <p class="text-[10px] font-bold tracking-widest text-white/35 uppercase mb-2">Total Matches</p>
+        <p class="text-3xl font-black tracking-tight">
+          {{ results().length.toString().padStart(2, '0') }}
+        </p>
+      </div>
+      <div class="bg-[#0f1520] border-l-4 border-l-[#ef4444] border border-white/[0.06] rounded-xl px-5 py-4 min-w-[140px]">
+        <p class="text-[10px] font-bold tracking-widest text-white/35 uppercase mb-2">Alert Status</p>
+        <p class="text-3xl font-black tracking-tight text-red-400">
+          {{ alertCount().toString().padStart(2, '0') }}
+        </p>
+      </div>
+    </div>
+
+    }
+
+    <!-- ── STAT CARDS ── -->
+
+
+    <!-- ── DETAILED INVENTORY TABLE ── -->
+    <div class="bg-[#0f1520] rounded-xl border border-white/[0.06] overflow-hidden">
+
+      <!-- Table header -->
+      <div class="flex items-start justify-between px-6 py-5 border-b border-white/[0.05]">
+        <div>
+          <h2 class="text-base font-black tracking-wide">Detailed Inventory</h2>
+          <p class="text-xs text-white/30 mt-0.5">Managed list of all active stock keeping units.</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <!-- Category filter -->
+          <div class="relative">
+            <select
+              [ngModel]="selectedCat()"
+              (ngModelChange)="setCategory($event)"
+              class="appearance-none bg-[#131b2e] border border-white/[0.08] rounded-lg pl-3 pr-8 py-2
+                     text-[11px] font-bold tracking-widest text-white/60 outline-none cursor-pointer
+                     hover:border-[#ff6200]/40 transition-colors"
+            >
+              @for (cat of categories; track cat) {
+                <option [value]="cat" class="bg-[#131b2e]">{{ cat }}</option>
+              }
+            </select>
+            <fa-icon [icon]="faChevronDown" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/30 text-[9px] pointer-events-none" />
+          </div>
+
+          <button class="w-8 h-8 bg-[#131b2e] border border-white/[0.08] rounded-lg flex items-center justify-center text-white/40 hover:text-[#ff6200] hover:border-[#ff6200]/40 transition-colors">
+            <fa-icon [icon]="faFilter" class="text-xs" />
+          </button>
+          <button class="w-8 h-8 bg-[#131b2e] border border-white/[0.08] rounded-lg flex items-center justify-center text-white/40 hover:text-[#ff6200] hover:border-[#ff6200]/40 transition-colors">
+            <fa-icon [icon]="faDownload" class="text-xs" />
+          </button>
+        </div>
+      </div>
+
+      <!-- Column headers -->
+      <div class="grid grid-cols-[120px_1fr_120px_110px_100px_120px_80px] items-center px-6 py-3 border-b border-white/[0.05]">
+        @for (col of ['SKU ID','PRODUCT NAME','CATEGORY','STOCK COUNT','UNIT PRICE','STATUS','ACTIONS']; track col) {
+          <p class="text-[10px] font-bold tracking-widest text-white/30 uppercase">{{ col }}</p>
+        }
+      </div>
+
+      <!-- Rows -->
+      @for (item of filteredItems(); track item.skuId; let last = $last) {
+        <div class="grid grid-cols-[120px_1fr_120px_110px_100px_120px_80px] items-center px-6 py-4 hover:bg-white/[0.02] transition-colors"
+             [class.border-b]="!last"
+             [class.border-white/[0.04]]="!last">
+
+          <!-- SKU ID -->
+          <p class="text-xs font-bold text-[#ff6200] leading-tight">{{ item.skuId }}</p>
+
+          <!-- Product -->
+          <div class="flex items-center gap-3 pr-4">
+            <div class="w-9 h-9 bg-[#1a2235] rounded-lg flex items-center justify-center shrink-0 border border-white/[0.06] overflow-hidden">
+              @if (item.imageUrl) {
+                <img [src]="item.imageUrl" [alt]="item.productName" class="w-full h-full object-cover" />
+              } @else {
+                <span class="text-[10px] text-white/20 font-bold">{{ item.productName.slice(0,2).toUpperCase() }}</span>
+              }
+            </div>
+            <p class="text-sm font-semibold leading-tight">{{ item.productName }}</p>
+          </div>
+
+          <!-- Category -->
+          <p class="text-[10px] font-bold tracking-widest text-white/40">{{ item.category }}</p>
+
+          <!-- Stock count -->
+          <p [class]="stockCountClass(item) + ' text-sm'">
+            {{ item.stockCount | number }} Units
+          </p>
+
+          <!-- Price -->
+          <p class="text-sm font-semibold text-white/80">${{ item.unitPrice.toFixed(2) }}</p>
+
+          <!-- Status -->
+          <div>
+            <span [class]="'text-[10px] font-black tracking-widest px-2.5 py-1 rounded-full border uppercase ' + statusClass(item.status)">
+              {{ item.status }}
+            </span>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex justify-center">
+            <button class="w-7 h-7 flex items-center justify-center text-white/25 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+              <fa-icon [icon]="faEllipsisV" class="text-sm" />
+            </button>
+          </div>
+
+        </div>
+      }
+
+      <!-- Empty state -->
+      @if (filteredItems().length === 0) {
+        <div class="flex flex-col items-center justify-center py-16 text-white/20">
+          <fa-icon [icon]="faSearch" class="text-3xl mb-3" />
+          <p class="text-sm font-semibold">No items match your search</p>
+          <p class="text-xs mt-1">Try a different query or category</p>
+        </div>
+      }
+
+      
+
+    </div>
+    @if(searchQuery() !== '') {
+        <div class="grid grid-cols-2 gap-4">
+
+      <!-- Need to Restock? -->
+      <div class="relative bg-[#0f1520] border border-white/[0.06] rounded-2xl p-6 overflow-hidden">
+        <div class="relative z-10 max-w-xs">
+          <h3 class="text-xl font-black mb-2">Need to Restock?</h3>
+          <p class="text-sm text-white/40 leading-relaxed mb-5">
+            Automate your
+            <span class="text-white/70">'{{ searchQuery() || "Industrial" }}'</span>
+            category replenishment. Connect with top-tier suppliers for
+            <span class="text-white/70">'{{ results()[0]?.productName ?? "your products" }}'</span>
+            directly from the terminal.
+          </p>
+          <button class="group flex items-center gap-3 bg-[#ff6200] hover:bg-[#e55700] text-white text-xs font-black
+                         tracking-widest uppercase px-5 py-3 rounded-xl transition-all">
+            Manage Suppliers
+            <fa-icon [icon]="faArrowRight" class="transition-transform group-hover:translate-x-1" />
+          </button>
+        </div>
+
+        <!-- Decorative image placeholder -->
+        <div class="absolute right-0 top-0 bottom-0 w-44 overflow-hidden rounded-r-2xl">
+          <div class="w-full h-full bg-gradient-to-l from-[#1a1200] via-[#2d1b00] to-transparent opacity-80"></div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-32 h-32 rounded-full bg-[#ff6200]/10 border border-[#ff6200]/20 flex items-center justify-center">
+              <svg width="40" height="40" fill="#ff6200" opacity="0.4" viewBox="0 0 16 16">
+                <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Smart Insights -->
+      <div class="bg-[#0f1520] border border-white/[0.06] rounded-2xl p-6">
+        <div class="flex items-center gap-2 mb-3">
+          <svg width="16" height="16" fill="#60a5fa" viewBox="0 0 16 16">
+            <path d="M7.657 6.247c.11-.33.576-.33.686 0l.645 1.937a2.89 2.89 0 0 0 1.829 1.828l1.936.645c.33.11.33.576 0 .686l-1.937.645a2.89 2.89 0 0 0-1.828 1.829l-.645 1.936a.361.361 0 0 1-.686 0l-.645-1.937a2.89 2.89 0 0 0-1.828-1.828l-1.937-.645a.361.361 0 0 1 0-.686l1.937-.645a2.89 2.89 0 0 0 1.828-1.828l.645-1.937zM3.794 1.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387A1.734 1.734 0 0 0 4.593 5.69l-.387 1.162a.217.217 0 0 1-.412 0L3.407 5.69A1.734 1.734 0 0 0 2.31 4.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387A1.734 1.734 0 0 0 3.407 2.31l.387-1.162zM10.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732L9.1 2.137a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L10.863.1z"/>
+          </svg>
+          <h3 class="text-sm font-black text-[#60a5fa] tracking-wide">Smart Insights</h3>
+        </div>
+        <p class="text-sm text-white/50 leading-relaxed mb-4">
+          <span class="text-white/80 font-bold">{{ searchQuery() || 'Industrial' }}</span>
+          category items have seen a
+          <span class="text-[#ff6200] font-bold">14% increase</span>
+          in demand over the last 30 days. Consider adjusting low stock thresholds.
+        </p>
+        <button class="flex items-center gap-2 text-[11px] font-black tracking-widest uppercase text-[#60a5fa]
+                       hover:text-blue-300 transition-colors">
+          <fa-icon [icon]="faChartLine" class="text-xs" />
+          Analytics Report
+          <fa-icon [icon]="faArrowRight" class="text-[9px]" />
+        </button>
+      </div>
+
+    </div>
+      }
+  </div>
+</div>

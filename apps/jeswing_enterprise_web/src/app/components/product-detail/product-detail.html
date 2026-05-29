@@ -1,0 +1,164 @@
+@if (product(); as p) {<div class="min-h-screen bg-[#090c14] text-white flex flex-col">
+
+  <!-- ── MAIN CONTENT ── -->
+  <div class="flex-1 flex items-center justify-center px-8 py-12">
+    <div class="w-full max-w-5xl grid grid-cols-2 gap-16 items-center">
+
+      <!-- ── LEFT — Product Image ── -->
+      <div class="relative">
+        <!-- Badge -->
+        <!-- <div class="absolute top-5 left-5 z-10 bg-[#ff6200] text-white text-[10px] font-black tracking-widest uppercase px-3 py-1.5 rounded-full shadow-lg">
+          {{ product.badge }}
+        </div> -->
+
+        <!-- Image card -->
+        <div class="relative bg-[#0f1520] border border-white/[0.08] rounded-3xl overflow-hidden aspect-square">
+          <!-- Ambient glow -->
+          <div class="absolute inset-0 bg-gradient-to-br from-[#ff6200]/5 via-transparent to-transparent pointer-events-none z-10"></div>
+
+          <img
+            [src]="p.image"
+            [alt]="p.name"
+            class="w-full h-full object-cover"
+          />
+        </div>
+
+        <!-- Corner accents -->
+        <div class="absolute -top-1 -left-1 w-6 h-6 border-t-2 border-l-2 border-[#ff6200]/40 rounded-tl-xl pointer-events-none"></div>
+        <div class="absolute -bottom-1 -right-1 w-6 h-6 border-b-2 border-r-2 border-[#ff6200]/40 rounded-br-xl pointer-events-none"></div>
+      </div>
+
+      <!-- ── RIGHT — Product Info ── -->
+      <div class="flex flex-col gap-5">
+
+        <!-- Series label -->
+        <!-- <div class="flex items-center gap-2">
+          <svg width="12" height="12" fill="#ff6200" viewBox="0 0 16 16">
+            <path d="M7.657 6.247c.11-.33.576-.33.686 0l.645 1.937a2.89 2.89 0 0 0 1.829 1.828l1.936.645c.33.11.33.576 0 .686l-1.937.645a2.89 2.89 0 0 0-1.828 1.829l-.645 1.936a.361.361 0 0 1-.686 0l-.645-1.937a2.89 2.89 0 0 0-1.828-1.828l-1.937-.645a.361.361 0 0 1 0-.686l1.937-.645a2.89 2.89 0 0 0 1.828-1.828l.645-1.937z"/>
+          </svg>
+          <span class="text-[11px] font-black tracking-widest text-[#ff6200] uppercase">{{ product.series }}</span>
+        </div> -->
+
+        <!-- Title -->
+        <h1 class="text-5xl font-black leading-none tracking-tight -mt-1">
+          {{ p.name }}
+        </h1>
+
+        <!-- Rating -->
+        <!-- <div class="flex items-center gap-2.5">
+          <div class="flex items-center gap-0.5">
+            @for (star of stars(); track $index) {
+              @if (star === 'full') {
+                <fa-icon [icon]="faStar" class="text-sm text-[#ff6200]" />
+              } @else if (star === 'half') {
+                <fa-icon [icon]="faStarHalf" class="text-sm text-[#ff6200]" />
+              } @else {
+                <fa-icon [icon]="faStar" class="text-sm text-white/15" />
+              }
+            }
+          </div>
+          <span class="text-xs text-white/40">({{ product.reviews }} Verified Reviews)</span>
+        </div> -->
+
+        <!-- Description -->
+        <p class="text-sm text-white/50 leading-relaxed">{{ p.description }}</p>
+
+        <!-- Price -->
+        <!-- <div class="flex items-baseline gap-3">
+          <span class="text-3xl font-black">${{ p.price.toFixed(2) }}</span>
+          <span class="text-lg text-white/30 line-through font-medium">${{ p.originalPrice.toFixed(2) }}</span>
+          <span class="text-xs font-black bg-[#ff6200]/15 text-[#ff6200] border border-[#ff6200]/25 px-2 py-0.5 rounded-full">
+            -{{ discount() }}%
+          </span>
+        </div> -->
+
+        <!-- Feature pills -->
+        <!-- <div class="grid grid-cols-3 gap-3">
+          @for (feat of features; track feat.label) {
+            <div class="bg-[#0f1520] border border-white/[0.07] rounded-xl p-3 flex flex-col gap-1.5">
+              <fa-icon [icon]="feat.icon" class="text-[#ff6200] text-xs" />
+              <p class="text-[9px] font-black tracking-widest text-white/30 uppercase">{{ feat.label }}</p>
+              <p class="text-xs font-bold text-white/80 leading-tight">{{ feat.value }}</p>
+            </div>
+          }
+        </div> -->
+
+        <!-- CTAs -->
+        <div class="flex items-center gap-3">
+          <button
+            (click)="addToCart()"
+            class="flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl font-black text-sm tracking-widest uppercase transition-all duration-200"
+            [class.bg-[#ff6200]]="!addedToCart()"
+            [class.hover:bg-[#e55700]]="!addedToCart()"
+            [class.bg-emerald-500]="addedToCart()"
+            [class.text-white]="true"
+          >
+            <fa-icon [icon]="faCartShopping" class="text-base" />
+            {{ addedToCart() ? 'Added to Collection!' : 'Add to Collection' }}
+          </button>
+
+          <button
+            (click)="toggleWishlist()"
+            class="w-14 h-14 rounded-2xl border-2 flex items-center justify-center transition-all duration-200"
+            [class.border-[#ff6200]]="isWishlisted()"
+            [class.bg-[#ff6200]/10]="isWishlisted()"
+            [class.text-[#ff6200]]="isWishlisted()"
+            [class.border-white/10]="!isWishlisted()"
+            [class.text-white/30]="!isWishlisted()"
+            [class.hover:border-white/30]="!isWishlisted()"
+          >
+            <fa-icon [icon]="faHeart" class="text-base" />
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STICKY BOTTOM BAR ── -->
+  <div class="sticky bottom-0 bg-[#0e1525]/95 backdrop-blur-md border-t border-white/[0.06] px-8 py-4">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+
+      <!-- Product thumb -->
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl overflow-hidden border border-white/[0.08] shrink-0">
+          <img [src]="p.image" [alt]="p.name" class="w-full h-full object-cover" />
+        </div>
+        <div>
+          <p class="text-sm font-black leading-tight">{{ p.name }}</p>
+          <p class="text-xs text-[#ff6200] font-bold mt-0.5">${{ p.price }}</p>
+        </div>
+      </div>
+
+      <!-- Quantity + Add to Cart -->
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-0 bg-[#131b2e] border border-white/[0.08] rounded-xl overflow-hidden">
+          <button
+            (click)="decrement()"
+            class="w-10 h-11 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/5 transition-colors"
+          >
+            <fa-icon [icon]="faMinus" class="text-xs" />
+          </button>
+          <span class="w-10 text-center text-sm font-black">{{ quantity() }}</span>
+          <button
+            (click)="increment()"
+            class="w-10 h-11 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/5 transition-colors"
+          >
+            <fa-icon [icon]="faPlus" class="text-xs" />
+          </button>
+        </div>
+
+        <button
+          (click)="addToCart()"
+          class="flex items-center gap-2.5 bg-[#ff6200] hover:bg-[#e55700] text-white font-black text-xs
+                 tracking-widest uppercase px-8 py-3.5 rounded-xl transition-colors"
+        >
+          <fa-icon [icon]="faCartShopping" class="text-sm" />
+          Add to Cart
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>}

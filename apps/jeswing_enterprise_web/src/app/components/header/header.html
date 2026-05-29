@@ -1,0 +1,81 @@
+<header class="bg-primary-300 text-orange-400 sticky top-0 z-50">
+  <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+    <h1 class="text-2xl font-bold">
+      <span class="text-orange-500">🏠</span>
+      <a routerLink="/" class="w-full h-full">JESWING_ENTERPRISE</a>
+    </h1>
+    <nav>
+      <ul class="flex space-x-4 items-center text-white">
+        @if (isLoggedIn()) {
+
+        <li>
+          <a routerLink="/arrivals" class="hover:underline">New Arrivals</a>
+        </li>
+        <li><a routerLink="/orders" class="hover:underline">Orders</a></li>
+        <li>
+          <a routerLink="/cart" class="relative inline-flex cart-icon" [class.cart-bounce]="isCartBouncing()">
+            <svg
+              class="w-5 h-5 text-orange-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+              />
+            </svg>
+            <span class="cart-count"> {{ cartStore.totalItems() }}</span>
+          </a>
+        </li>
+        <li>
+          <div
+            class="rounded-full border px-2 py-1 border-0 text-white bg-base-500"
+          >
+            <a routerLink="/profile" class="hover:underline"
+              ><span> <fa-icon [icon]="faUser" class="text-xl"></fa-icon> </span
+            ></a>
+          </div>
+        </li>
+
+        } @else {
+        <li>
+          <a
+            routerLink="/login"
+            class="relative inline-block px-6 py-1 rounded-full text-orange-100 bg-orange-600 overflow-hidden transition-colors duration-300 group"
+          >
+            <span
+              class="absolute inset-0 bg-orange-900 -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-in-out"
+            ></span>
+            <span class="relative z-10">Log In</span>
+          </a>
+        </li>
+        <li>
+          <a
+            routerLink="/signup"
+            class="relative inline-block px-6 py-1 rounded-full text-orange-600 border border-orange-600 overflow-hidden transition-colors duration-300 group mx-2"
+          >
+            <span
+              class="absolute inset-0 bg-orange-600 translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-in-out"
+            ></span>
+            <span
+              class="relative z-10 group-hover:text-white transition-colors duration-300"
+              >Sign Up</span
+            >
+          </a>
+        </li>
+        } @if (authStore.isAdmin()) {
+        <li>
+          <a
+            routerLink="/admin/dashboard"
+            class="flex items-center gap-3 px-5 py-[11px] text-[13px] font-medium text-[#8a90a8] border-l-[3px] border-transparent hover:bg-[#f05a1a]/10 hover:text-[#eef0f6] transition-all"
+          >
+            <fa-icon [icon]="faThLarge"></fa-icon> Dashboard
+          </a>
+        </li>
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
